@@ -7,11 +7,11 @@ const { spawn } = require('child_process');
 
 const app = express();
 app.use(cors());
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8800;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-sequelize.sync({ }).then(() => {
+sequelize.sync({ force: true }).then(() => {
   console.log('Database synced!');
 });
 
@@ -58,19 +58,48 @@ app.post('/create_subscription', (req, res) => {
   let data = req.body;
   console.log(data)
     
-  sequelize.sync().then(() => {
-    Subscription.create({
-      startDate: data.startDate,
-      endDate: data.endDate,
-      UserId: data.UserId,
-      MagazineId: data.MagazineId,
-    }).then(resp=> {
-        res.status(200).send("Subscription created")
-    }).catch((error) => {
-      console.log(error)
-      res.status(500).send(`Failed to create a new record: ${JSON.stringify(error)}`);
-    });
+  User.findOne({ where: { username: data.username } })
+  .then((user) => {
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Find the magazine based on the magazine name
+    Magazine.findOne({ where: { name: data.magazineName } })
+      .then((magazine) => {
+        if (!magazine) {
+          throw new Error('Magazine not found');
+        }
+
+        // Create the subscription
+        Subscription.create({
+          startDate: data.startDate,
+          endDate: data.endDate,
+          UserId: user.id,
+          MagazineId: magazine.id,
+        })
+          .then(() => {
+            res.status(200).send('Subscription created');
+          })
+          .catch((error) => {
+            console.log(error);
+            res
+              .status(500)
+              .send(`Failed to create a new record: ${JSON.stringify(error)}`);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        res
+          .status(500)
+          .send(`Failed to find the magazine: ${JSON.stringify(error)}`);
+      });
   })
+  .catch((error) => {
+    console.log(error);
+    res.status(500).send(`Failed to find the user: ${JSON.stringify(error)}`);
+  });
+  
 });
 
 app.get('/subscriptions', (req, res) => {
