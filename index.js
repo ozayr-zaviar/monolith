@@ -126,6 +126,7 @@ app.get('/subscriptions', (req, res) => {
 
 app.get('/batch', (req, res) => {
     // Spawn a new Python process
+    error_flag = false
     const pythonProcess = spawn('python3', ['batch/job.py']);
 
     // Listen for data from the Python script
@@ -136,6 +137,7 @@ app.get('/batch', (req, res) => {
     // Listen for errors from the Python script
     pythonProcess.stderr.on('data', (data) => {
       res.status(404).send("job failed")
+      error_flag = true
     });
 
     // Listen for the Python script to exit
@@ -143,7 +145,9 @@ app.get('/batch', (req, res) => {
       console.log(`Python script exited with code ${code}`);
     });
 
-    res.status(200).send("Job started")
+    if (!error_flag) {
+      res.status(200).send("Job started")
+    }
 });
 
  app.listen(port, () => {
