@@ -136,7 +136,8 @@ app.get('/batch', (req, res) => {
 
     // Listen for errors from the Python script
     pythonProcess.stderr.on('data', (data) => {
-      res.status(404).send("job failed")
+      console.log("*****ERROR******")
+      console.log(data)
       error_flag = true
     });
 
