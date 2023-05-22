@@ -137,7 +137,7 @@ app.get('/batch', (req, res) => {
     // Listen for errors from the Python script
     pythonProcess.stderr.on('data', (data) => {
       console.log("*****ERROR******")
-      console.log(data)
+      console.log(data.toString())
       error_flag = true
     });
 
