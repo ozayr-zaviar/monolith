@@ -8,7 +8,7 @@ const { spawn } = require('child_process');
 
 const app = express();
 app.use(cors());
-const port = process.env.PORT || 8800;
+const port = process.env.PORT || 80;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const reactServerURL = "http://127.0.0.1:4173/"; 
