@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 const cors = require('cors');
 const { User, Magazine, Subscription } = require('./models');
 const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const { spawn } = require('child_process');
 
 const app = express();
@@ -10,19 +11,56 @@ app.use(cors());
 const port = process.env.PORT || 8800;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const reactServerURL = "http://127.0.0.1:4173/"; 
+app.use(express.static(reactServerURL));
 
 sequelize.sync({ force: true }).then(() => {
   console.log('Database synced!');
 });
 
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
+app.get('/', createProxyMiddleware({
+  target: reactServerURL,
+  changeOrigin: true,
+}));
+
+// Redirect requests for CSS and JavaScript files to the remote server
+app.get('/test', (req, res) => {
+  res.status(200).send('Hello World');
 });
 
-app.post('/create_user', async (req, res) => {
-  let data = req.body;
-  console.log(data)
+// Redirect requests for CSS and JavaScript files to the remote server
+app.get('/index.css', createProxyMiddleware({
+  target: reactServerURL,
+  changeOrigin: true,
+}));
 
+app.get('/index.js', createProxyMiddleware({
+  target: reactServerURL,
+  changeOrigin: true,
+}));
+
+app.use('/image1.jpg', createProxyMiddleware({
+  target: reactServerURL,
+  changeOrigin: true,
+}));
+
+app.use('/image2.jpg', createProxyMiddleware({
+  target: reactServerURL,
+  changeOrigin: true,
+}));
+
+app.use('/image3.jpg', createProxyMiddleware({
+  target: reactServerURL,
+  changeOrigin: true,
+}));
+
+app.use('/static', createProxyMiddleware({
+  target: reactServerURL,
+  changeOrigin: true,
+}));
+
+app.post('/create_user', (req, res) => {
+  let data = req.body;
   sequelize.sync().then(() => {
     User.create({
       username: data.username,
