@@ -19,7 +19,7 @@ const Widget = () => {
   useEffect(() => {
     // Fetch user data and set the state
     // Replace the URL with your API endpoint
-    fetch(`http://${window.location.hostname}:8800/subscriptions`)
+    fetch(`http://${window.location.hostname}:80/subscriptions`)
       .then((response) => response.json())
       .then((data) => setUserData(data))
       .catch((error) => console.log(error));
