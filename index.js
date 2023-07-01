@@ -21,6 +21,7 @@ sequelize.sync({ force: true }).then(() => {
 app.get('/', createProxyMiddleware({
   target: reactServerURL,
   changeOrigin: true,
+  proxyTimeout: 60000,
 }));
 
 // Redirect requests for CSS and JavaScript files to the remote server
@@ -32,31 +33,37 @@ app.get('/test', (req, res) => {
 app.get('/index.css', createProxyMiddleware({
   target: reactServerURL,
   changeOrigin: true,
+  proxyTimeout: 60000,
 }));
 
 app.get('/index.js', createProxyMiddleware({
   target: reactServerURL,
   changeOrigin: true,
+  proxyTimeout: 60000,
 }));
 
 app.use('/image1.jpg', createProxyMiddleware({
   target: reactServerURL,
   changeOrigin: true,
+  proxyTimeout: 60000,
 }));
 
 app.use('/image2.jpg', createProxyMiddleware({
   target: reactServerURL,
   changeOrigin: true,
+  proxyTimeout: 60000,
 }));
 
 app.use('/image3.jpg', createProxyMiddleware({
   target: reactServerURL,
   changeOrigin: true,
+  proxyTimeout: 60000,
 }));
 
 app.use('/static', createProxyMiddleware({
   target: reactServerURL,
   changeOrigin: true,
+  proxyTimeout: 60000,
 }));
 
 app.post('/create_user', (req, res) => {
